@@ -43,6 +43,9 @@ public class VisionSubsystem extends SubsystemBase {
     table = NetworkTableInstance.getDefault().getTable("ML");
   }
 
+  /**
+   * Periodically updates the list of detected objects with the data found on NetworkTables
+   */
   @Override
   public void periodic() {
     totalObjects = (int) table.getEntry("nb_objects").getNumber(0);
@@ -53,14 +56,24 @@ public class VisionSubsystem extends SubsystemBase {
       for (int j = 0; j < 4; j++) {
         box[j] = boxes[i + j];
       }
-      gameObjects[i] = new GameObject(classes[i], heading, distance);
+      gameObjects[i] = new GameObject(classes[i], getHeading(box), getDistance(box));
     }
   }
 
+  /**
+   * Gets the heading of the given object relative to the robot, in degrees
+   * @param box the bounding box of a detected object
+   * @return the heading of the detected object relative to the robot, in degrees
+   */
   private double getHeading(double[] box) {
     return 757.8125 / (Math.pow(Math.abs(box[2] - box[0]), -1.303));
   }
 
+  /**
+   * Gets the distance of the given object relative to the robot, in inches
+   * @param box the bounding box of a detected object
+   * @return the distance of the detected object relative to the robot, in inches
+   */
   private double getDistance(double[] box) {
     return (((box[0] + box[2]) / 2.0 - 160) / (Math.abs(box[2] - box[0]) / 19.5)) / 12.0;
   }

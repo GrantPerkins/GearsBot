@@ -12,11 +12,22 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionSubsystem extends SubsystemBase {
+  /**
+   * Represents a detected game object from the Coral
+   */
   public class GameObject {
+    String name;
     double heading;
     double distance;
 
+    /**
+     * Holds the data determined by Coral
+     * @param name
+     * @param heading
+     * @param distance
+     */
     public GameObject(String name, double heading, double distance) {
+      this.name = name;
       this.heading = heading;
       this.distance = distance;
     }
@@ -27,13 +38,13 @@ public class VisionSubsystem extends SubsystemBase {
   GameObject[] gameObjects;
   private String[] classes;
   private double[] boxes, box;
-  private double heading, distance;
 
   public VisionSubsystem() {
     table = NetworkTableInstance.getDefault().getTable("ML");
   }
 
-  void update() {
+  @Override
+  public void periodic() {
     totalObjects = (int) table.getEntry("nb_objects").getNumber(0);
     gameObjects = new GameObject[totalObjects];
     classes = table.getEntry("object_classes").getStringArray(new String[totalObjects]);
@@ -42,9 +53,15 @@ public class VisionSubsystem extends SubsystemBase {
       for (int j = 0; j < 4; j++) {
         box[j] = boxes[i + j];
       }
-      heading = 757.8125 / (Math.pow(Math.abs(box[2] - box[0]), -1.303));
-      distance = (((box[0] + box[2]) / 2.0 - 160) / (Math.abs(box[2] - box[0]) / 19.5)) / 12.0;
       gameObjects[i] = new GameObject(classes[i], heading, distance);
     }
+  }
+
+  private double getHeading(double[] box) {
+    return 757.8125 / (Math.pow(Math.abs(box[2] - box[0]), -1.303));
+  }
+
+  private double getDistance(double[] box) {
+    return (((box[0] + box[2]) / 2.0 - 160) / (Math.abs(box[2] - box[0]) / 19.5)) / 12.0;
   }
 }

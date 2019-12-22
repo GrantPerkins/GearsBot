@@ -13,9 +13,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionSubsystem extends SubsystemBase {
   /**
-   * Represents a detected game object from the Coral
+   * Represents a detected cargo from the Coral
    */
-  public class GameObject {
+  public class Cargo {
     String name;
     double heading;
     double distance;
@@ -26,7 +26,7 @@ public class VisionSubsystem extends SubsystemBase {
      * @param heading
      * @param distance
      */
-    public GameObject(String name, double heading, double distance) {
+    public Cargo(String name, double heading, double distance) {
       this.name = name;
       this.heading = heading;
       this.distance = distance;
@@ -35,7 +35,8 @@ public class VisionSubsystem extends SubsystemBase {
 
   NetworkTable table;
   int totalObjects;
-  GameObject[] gameObjects;
+  Cargo[] cargo;
+  private int totalCargo;
   private String[] classes;
   private double[] boxes, box;
 
@@ -45,18 +46,25 @@ public class VisionSubsystem extends SubsystemBase {
 
   /**
    * Periodically updates the list of detected objects with the data found on NetworkTables
+   * Also creates array of cargo and their relative position.
    */
   @Override
   public void periodic() {
     totalObjects = (int) table.getEntry("nb_objects").getNumber(0);
-    gameObjects = new GameObject[totalObjects];
+    totalCargo = 0;
     classes = table.getEntry("object_classes").getStringArray(new String[totalObjects]);
+    for (String s: classes) {
+      if (s.equals("Cargo"))
+        totalCargo++;
+    }
+    cargo = new Cargo[totalCargo];
     boxes = table.getEntry("boxes").getDoubleArray(new double[4 * totalObjects]);
     for (int i = 0; i < totalObjects; i += 4) {
       for (int j = 0; j < 4; j++) {
         box[j] = boxes[i + j];
       }
-      gameObjects[i] = new GameObject(classes[i], getHeading(box), getDistance(box));
+      if (classes[i].equals("Cargo"))
+        cargo[i] = new Cargo(classes[i], getHeading(box), getDistance(box));
     }
   }
 

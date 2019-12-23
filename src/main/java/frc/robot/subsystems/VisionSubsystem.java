@@ -16,27 +16,46 @@ public class VisionSubsystem extends SubsystemBase {
    * Represents a detected cargo from the Coral
    */
   public class Cargo {
-    String name;
-    double heading;
     double distance;
+    double x_offset;
 
     /**
      * Holds the data determined by Coral
+     * 
+     * @param heading
+     * @param distance
+     */
+    public Cargo(double[] box) {
+      this.distance = 231.13 * Math.pow(box[3] - box[1], -1.303);
+      this.x_offset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 13.0) / 39.37);
+    }
+  }
+
+  /**
+   * Represents a detected hatch from the Coral
+   */
+  public class Hatch {
+    double distance;
+    double x_offset;
+
+    /**
+     * Holds the data determined by Coral
+     * 
      * @param name
      * @param heading
      * @param distance
      */
-    public Cargo(String name, double heading, double distance) {
-      this.name = name;
-      this.heading = heading;
-      this.distance = distance;
+    public Hatch(double[] box) {
+      this.distance = 289.67 * Math.pow(box[3] - box[1], -1.131);
+      this.x_offset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 19.5) / 39.37);
     }
   }
 
   NetworkTable table;
   int totalObjects;
   Cargo[] cargo;
-  private int totalCargo;
+  Hatch[] hatches;
+  int totalCargo, totalHatches;
   private String[] classes;
   private double[] boxes, box;
 
@@ -45,44 +64,32 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   /**
-   * Periodically updates the list of detected objects with the data found on NetworkTables
-   * Also creates array of cargo and their relative position.
+   * Periodically updates the list of detected objects with the data found on
+   * NetworkTables Also creates array of cargo and their relative position.
    */
   @Override
   public void periodic() {
     totalObjects = (int) table.getEntry("nb_objects").getNumber(0);
     totalCargo = 0;
+    totalHatches = 0;
     classes = table.getEntry("object_classes").getStringArray(new String[totalObjects]);
-    for (String s: classes) {
+    for (String s : classes) {
       if (s.equals("Cargo"))
         totalCargo++;
+      if (s.equals("Hatchcover"))
+        totalHatches++;
     }
     cargo = new Cargo[totalCargo];
+    hatches = new Hatch[totalHatches];
     boxes = table.getEntry("boxes").getDoubleArray(new double[4 * totalObjects]);
     for (int i = 0; i < totalObjects; i += 4) {
       for (int j = 0; j < 4; j++) {
         box[j] = boxes[i + j];
       }
       if (classes[i].equals("Cargo"))
-        cargo[i] = new Cargo(classes[i], getHeading(box), getDistance(box));
+        cargo[i] = new Cargo(box);
+      if (classes[i].equals("Hatch"))
+        hatches[i] = new Hatch(box);
     }
-  }
-
-  /**
-   * Gets the heading of the given object relative to the robot, in degrees
-   * @param box the bounding box of a detected object
-   * @return the heading of the detected object relative to the robot, in degrees
-   */
-  private double getHeading(double[] box) {
-    return 757.8125 / (Math.pow(Math.abs(box[2] - box[0]), -1.303));
-  }
-
-  /**
-   * Gets the distance of the given object relative to the robot, in inches
-   * @param box the bounding box of a detected object
-   * @return the distance of the detected object relative to the robot, in inches
-   */
-  private double getDistance(double[] box) {
-    return (((box[0] + box[2]) / 2.0 - 160) / (Math.abs(box[2] - box[0]) / 19.5)) / 12.0;
   }
 }

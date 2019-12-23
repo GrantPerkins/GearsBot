@@ -34,6 +34,10 @@ public class GamepieceRetriever {
 
   }
 
+  /**
+   * Only call this if you know there are cargo!
+   * @return a Ramsete command that drives to nearest cargo
+   */
   public Command getCargoCommand() {
     Cargo cargo = vision.cargo[0];
     TrajectoryConfig config = new TrajectoryConfig(0.25, 1)
@@ -61,6 +65,10 @@ public class GamepieceRetriever {
     return ramseteCommand.andThen(() -> drive.tankDriveVolts(0, 0));
   }
 
+  /**
+   * Only call this if you know there are hatches!
+   * @return a Ramsete command that drives to nearest hatch
+   */
   public Command getHatchCommand() {
     Hatch hatch = vision.hatches[0];
     TrajectoryConfig config = new TrajectoryConfig(0.25, 1)

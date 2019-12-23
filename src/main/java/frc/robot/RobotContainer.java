@@ -35,6 +35,7 @@ import frc.robot.commands.TeleopDriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -49,6 +50,7 @@ public class RobotContainer {
   private final ArmSubsystem arm = new ArmSubsystem();
   private final ClawSubsystem claw = new ClawSubsystem();
   private final DriveSubsystem drive = new DriveSubsystem();
+  public final VisionSubsystem vision = new VisionSubsystem();
 
   private final XboxController gamepad = new XboxController(0);
 

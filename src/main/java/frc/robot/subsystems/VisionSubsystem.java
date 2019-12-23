@@ -12,12 +12,20 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionSubsystem extends SubsystemBase {
+  private NetworkTable table;
+  private int totalObjects;
+  public Cargo[] cargo;
+  public Hatch[] hatches;
+  public int totalCargo, totalHatches;
+  private String[] classes;
+  private double[] boxes, box;
+
   /**
    * Represents a detected cargo from the Coral
    */
   public class Cargo {
-    double distance;
-    double x_offset;
+    public double distance;
+    public double x_offset;
 
     /**
      * Holds the data determined by Coral
@@ -35,8 +43,8 @@ public class VisionSubsystem extends SubsystemBase {
    * Represents a detected hatch from the Coral
    */
   public class Hatch {
-    double distance;
-    double x_offset;
+    public double distance;
+    public double x_offset;
 
     /**
      * Holds the data determined by Coral
@@ -50,14 +58,6 @@ public class VisionSubsystem extends SubsystemBase {
       this.x_offset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 19.5) / 39.37);
     }
   }
-
-  NetworkTable table;
-  int totalObjects;
-  Cargo[] cargo;
-  Hatch[] hatches;
-  int totalCargo, totalHatches;
-  private String[] classes;
-  private double[] boxes, box;
 
   public VisionSubsystem() {
     table = NetworkTableInstance.getDefault().getTable("ML");

@@ -51,7 +51,7 @@ public class RobotContainer {
   private final ArmSubsystem arm = new ArmSubsystem();
   private final ClawSubsystem claw = new ClawSubsystem();
   private final DriveSubsystem drive = new DriveSubsystem();
-  public final VisionSubsystem vision = new VisionSubsystem();
+  private final VisionSubsystem vision = new VisionSubsystem();
   private final GamepieceRetriever retriever = new GamepieceRetriever(vision, drive);
 
   private final XboxController gamepad = new XboxController(0);

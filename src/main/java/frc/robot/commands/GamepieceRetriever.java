@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -35,63 +36,70 @@ public class GamepieceRetriever {
   }
 
   /**
-   * Only call this if you know there are cargo!
+   * Drives to nearest cargo, if there is one.
    * @return a Ramsete command that drives to nearest cargo
    */
   public Command getCargoCommand() {
-    Cargo cargo = vision.cargo[0];
-    TrajectoryConfig config = new TrajectoryConfig(0.25, 1)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(Constants.DriveConstants.kDriveKinematics);
+    if (vision.totalCargo > 0) {
+      Cargo cargo = vision.cargo[0];
+      TrajectoryConfig config = new TrajectoryConfig(0.25, 1)
+          // Add kinematics to ensure max speed is actually obeyed
+          .setKinematics(Constants.DriveConstants.kDriveKinematics);
 
-    // An example trajectory to follow. All units in meters.
-    Trajectory cargoTrajectory = TrajectoryGenerator.generateTrajectory(
-        List.of(new Pose2d(0, 0, new Rotation2d(0)),
-                new Pose2d(cargo.x_offset, cargo.distance, new Rotation2d(0))),
-        // Pass config
-        config);
+      // An example trajectory to follow. All units in meters.
+      Trajectory cargoTrajectory = TrajectoryGenerator.generateTrajectory(
+          List.of(new Pose2d(0, 0, new Rotation2d(0)),
+                  new Pose2d(cargo.x_offset, cargo.distance, new Rotation2d(0))),
+          // Pass config
+          config);
 
-    RamseteCommand ramseteCommand = new RamseteCommand(
-        cargoTrajectory,
-        drive::getPose, 
-        new RamseteController(2, 0.7),
-        Constants.DriveConstants.kFeedforward,
-        Constants.DriveConstants.kDriveKinematics,
-        drive::getWheelSpeeds,
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        drive::tankDriveVolts,
-        drive);
-    return ramseteCommand.andThen(() -> drive.tankDriveVolts(0, 0));
+      RamseteCommand ramseteCommand = new RamseteCommand(
+          cargoTrajectory,
+          drive::getPose, 
+          new RamseteController(2, 0.7),
+          Constants.DriveConstants.kFeedforward,
+          Constants.DriveConstants.kDriveKinematics,
+          drive::getWheelSpeeds,
+          new PIDController(0, 0, 0),
+          new PIDController(0, 0, 0),
+          drive::tankDriveVolts,
+          drive);
+      return ramseteCommand.andThen(() -> drive.tankDriveVolts(0, 0));
+    }
+    return new WaitCommand(.1);
   }
+    
 
   /**
-   * Only call this if you know there are hatches!
+   * Drives to nearest hatch, if there is one.
    * @return a Ramsete command that drives to nearest hatch
    */
   public Command getHatchCommand() {
-    Hatch hatch = vision.hatches[0];
-    TrajectoryConfig config = new TrajectoryConfig(0.25, 1)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(Constants.DriveConstants.kDriveKinematics);
+    if (vision.totalHatches > 0) {
+      Hatch hatch = vision.hatches[0];
+      TrajectoryConfig config = new TrajectoryConfig(0.25, 1)
+          // Add kinematics to ensure max speed is actually obeyed
+          .setKinematics(Constants.DriveConstants.kDriveKinematics);
 
-    // An example trajectory to follow. All units in meters.
-    Trajectory cargoTrajectory = TrajectoryGenerator.generateTrajectory(
-        List.of(new Pose2d(0, 0, new Rotation2d(0)),
-                new Pose2d(hatch.x_offset, hatch.distance, new Rotation2d(0))),
-        // Pass config
-        config);
+      // An example trajectory to follow. All units in meters.
+      Trajectory cargoTrajectory = TrajectoryGenerator.generateTrajectory(
+          List.of(new Pose2d(0, 0, new Rotation2d(0)),
+                  new Pose2d(hatch.x_offset, hatch.distance, new Rotation2d(0))),
+          // Pass config
+          config);
 
-    RamseteCommand ramseteCommand = new RamseteCommand(cargoTrajectory,
-        drive::getPose,
-        new RamseteController(2, 0.7),
-        Constants.DriveConstants.kFeedforward,
-        Constants.DriveConstants.kDriveKinematics,
-        drive::getWheelSpeeds,
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
-        drive::tankDriveVolts,
-        drive);
-    return ramseteCommand.andThen(() -> drive.tankDriveVolts(0, 0));
+      RamseteCommand ramseteCommand = new RamseteCommand(cargoTrajectory,
+          drive::getPose,
+          new RamseteController(2, 0.7),
+          Constants.DriveConstants.kFeedforward,
+          Constants.DriveConstants.kDriveKinematics,
+          drive::getWheelSpeeds,
+          new PIDController(0, 0, 0),
+          new PIDController(0, 0, 0),
+          drive::tankDriveVolts,
+          drive);
+      return ramseteCommand.andThen(() -> drive.tankDriveVolts(0, 0));
+    }
+    return new WaitCommand(.1);
   }
 }

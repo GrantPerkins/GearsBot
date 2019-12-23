@@ -32,6 +32,7 @@ import frc.robot.commands.ArmUpCommand;
 import frc.robot.commands.CloseClawCommand;
 import frc.robot.commands.OpenClawCommand;
 import frc.robot.commands.TeleopDriveCommand;
+import frc.robot.commands.GamepieceRetriever;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -51,6 +52,7 @@ public class RobotContainer {
   private final ClawSubsystem claw = new ClawSubsystem();
   private final DriveSubsystem drive = new DriveSubsystem();
   public final VisionSubsystem vision = new VisionSubsystem();
+  private final GamepieceRetriever retriever = new GamepieceRetriever(vision, drive);
 
   private final XboxController gamepad = new XboxController(0);
 
@@ -85,12 +87,16 @@ public class RobotContainer {
     final Button dpadUp = new POVButton(gamepad, 0);
     final Button dpadRight = new POVButton(gamepad, 90);
     final Button dpadDown = new POVButton(gamepad, 180);
+    final Button rightBumper = new JoystickButton(gamepad, XboxController.Button.kBumperRight.value);
+    final Button leftBumper = new JoystickButton(gamepad, XboxController.Button.kBumperLeft.value);
 
     a.whenPressed(new OpenClawCommand(claw));
     b.whenPressed(new CloseClawCommand(claw));
     dpadUp.whenPressed(new ArmUpCommand(arm));
     dpadRight.whenPressed(new ArmMiddleCommand(arm));
     dpadDown.whenPressed(new ArmDownCommand(arm));
+    rightBumper.whenPressed(retriever.getCargoCommand());
+    leftBumper.whenPressed(retriever.getHatchCommand());
   }
 
   TrajectoryConfig config = new TrajectoryConfig(0.25, 1)

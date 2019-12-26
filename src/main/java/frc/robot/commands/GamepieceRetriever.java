@@ -82,13 +82,13 @@ public class GamepieceRetriever {
           .setKinematics(Constants.DriveConstants.kDriveKinematics);
 
       // An example trajectory to follow. All units in meters.
-      Trajectory cargoTrajectory = TrajectoryGenerator.generateTrajectory(
+      Trajectory hatchTrajectory = TrajectoryGenerator.generateTrajectory(
           List.of(new Pose2d(0, 0, new Rotation2d(0)),
                   new Pose2d(hatch.x_offset, hatch.distance, new Rotation2d(0))),
           // Pass config
           config);
 
-      RamseteCommand ramseteCommand = new RamseteCommand(cargoTrajectory,
+      RamseteCommand ramseteCommand = new RamseteCommand(hatchTrajectory,
           drive::getPose,
           new RamseteController(2, 0.7),
           Constants.DriveConstants.kFeedforward,

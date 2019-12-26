@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class VisionSubsystem extends SubsystemBase {
   private NetworkTable table;
   private int totalObjects;
-  public Cargo[] cargo;
-  public Hatch[] hatches;
+  public Cargo[] cargo = new Cargo[0];
+  public Hatch[] hatches = new Hatch[0];
   public int totalCargo, totalHatches;
   private String[] classes;
   private double[] boxes, box;
@@ -35,7 +35,7 @@ public class VisionSubsystem extends SubsystemBase {
      */
     public Cargo(double[] box) {
       this.distance = 231.13 * Math.pow(box[3] - box[1], -1.303);
-      this.x_offset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 13.0) / 39.37);
+      this.x_offset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 13.0) * 39.37);
     }
   }
 
@@ -55,7 +55,7 @@ public class VisionSubsystem extends SubsystemBase {
      */
     public Hatch(double[] box) {
       this.distance = 289.67 * Math.pow(box[3] - box[1], -1.131);
-      this.x_offset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 19.5) / 39.37);
+      this.x_offset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 19.5) * 39.37);
     }
   }
 
@@ -69,10 +69,11 @@ public class VisionSubsystem extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    totalObjects = (int) table.getEntry("nb_objects").getNumber(0);
     totalCargo = 0;
     totalHatches = 0;
+    totalObjects = (int) table.getEntry("nb_objects").getDouble(0);
     classes = table.getEntry("object_classes").getStringArray(new String[totalObjects]);
+    boxes = table.getEntry("boxes").getDoubleArray(new double[4 * totalObjects]);
     for (String s : classes) {
       if (s.equals("Cargo"))
         totalCargo++;
@@ -81,14 +82,19 @@ public class VisionSubsystem extends SubsystemBase {
     }
     cargo = new Cargo[totalCargo];
     hatches = new Hatch[totalHatches];
-    boxes = table.getEntry("boxes").getDoubleArray(new double[4 * totalObjects]);
+    
     for (int i = 0; i < totalObjects; i += 4) {
+      box = new double[4];
       for (int j = 0; j < 4; j++) {
-        box[j] = boxes[i + j];
+        try { 
+          box[j] = boxes[i + j];
+        } catch(ArrayIndexOutOfBoundsException e) {
+          System.err.println(totalObjects+" "+(i+j)+" "+boxes.length);
+        }
       }
       if (classes[i].equals("Cargo"))
         cargo[i] = new Cargo(box);
-      if (classes[i].equals("Hatch"))
+      if (classes[i].equals("Hatchcover"))
         hatches[i] = new Hatch(box);
     }
   }

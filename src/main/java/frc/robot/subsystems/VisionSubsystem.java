@@ -25,17 +25,16 @@ public class VisionSubsystem extends SubsystemBase {
    */
   public class Cargo {
     public double distance;
-    public double x_offset;
+    public double xOffset;
 
     /**
      * Holds the data determined by Coral
-     * 
-     * @param heading
-     * @param distance
+     *
+     * @param box the array of points
      */
     public Cargo(double[] box) {
       this.distance = 231.13 * Math.pow(box[3] - box[1], -1.303);
-      this.x_offset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 13.0) * 39.37);
+      this.xOffset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 13.0) * 39.37);
     }
   }
 
@@ -44,18 +43,16 @@ public class VisionSubsystem extends SubsystemBase {
    */
   public class Hatch {
     public double distance;
-    public double x_offset;
+    public double xOffset;
 
     /**
      * Holds the data determined by Coral
-     * 
-     * @param name
-     * @param heading
-     * @param distance
+     *
+     * @param box the array of points
      */
     public Hatch(double[] box) {
       this.distance = 289.67 * Math.pow(box[3] - box[1], -1.131);
-      this.x_offset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 19.5) * 39.37);
+      this.xOffset = (160 - ((box[0] + box[2]) / 2)) / (((box[3] - box[1]) / 19.5) * 39.37);
     }
   }
 
@@ -82,15 +79,11 @@ public class VisionSubsystem extends SubsystemBase {
     }
     cargo = new Cargo[totalCargo];
     hatches = new Hatch[totalHatches];
-    
+
     for (int i = 0; i < totalObjects; i += 4) {
       box = new double[4];
       for (int j = 0; j < 4; j++) {
-        try { 
-          box[j] = boxes[i + j];
-        } catch(ArrayIndexOutOfBoundsException e) {
-          System.err.println(totalObjects+" "+(i+j)+" "+boxes.length);
-        }
+        box[j] = boxes[i + j];
       }
       if (classes[i].equals("Cargo"))
         cargo[i] = new Cargo(box);

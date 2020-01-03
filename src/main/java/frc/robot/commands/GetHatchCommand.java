@@ -44,9 +44,10 @@ public class GetHatchCommand extends CommandBase{
       // An example trajectory to follow. All units in meters.
       Trajectory hatchTrajectory = TrajectoryGenerator.generateTrajectory(
           List.of(new Pose2d(0, 0, new Rotation2d(0)),
-                  new Pose2d(hatch.x_offset, hatch.distance, new Rotation2d(0))),
+                  new Pose2d(hatch.xOffset, hatch.distance, new Rotation2d(0))),
           // Pass config
           config);
+      System.out.println(hatch.xOffset+" "+hatch.distance);
 
       RamseteCommand ramseteCommand = new RamseteCommand(hatchTrajectory,
           drive::getPose,

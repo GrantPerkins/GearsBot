@@ -17,7 +17,7 @@ public class HatchPrint extends InstantCommand {
 
     private static String getMessage(VisionSubsystem vision) {
         if (vision.hatches.length > 0)
-            return String.format("Hatch at: %f, %f", vision.hatches[0].x_offset, vision.hatches[0].distance);
+            return String.format("Hatch at: %f, %f", vision.hatches[0].xOffset, vision.hatches[0].distance);
         return "No hatch.";
     }
 }

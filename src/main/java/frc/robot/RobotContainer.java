@@ -35,6 +35,7 @@ import frc.robot.commands.CloseClawCommand;
 import frc.robot.commands.OpenClawCommand;
 import frc.robot.commands.TeleopDriveCommand;
 import frc.robot.commands.GamepieceRetriever;
+import frc.robot.commands.GetHatchCommand;
 import frc.robot.commands.HatchPrint;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
@@ -100,7 +101,7 @@ public class RobotContainer {
     dpadDown.whenPressed(new ArmDownCommand(arm));
     rightBumper.whenPressed(retriever.getCargoCommand());
     // rightBumper.whenPressed(new HatchPrint(vision));
-    leftBumper.whenPressed(retriever.getHatchCommand());
+    leftBumper.whenPressed(new GetHatchCommand(vision, drive));
   }
 
   TrajectoryConfig config = new TrajectoryConfig(0.25, 1)

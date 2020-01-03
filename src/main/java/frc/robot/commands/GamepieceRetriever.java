@@ -56,7 +56,7 @@ public class GamepieceRetriever {
       // An example trajectory to follow. All units in meters.
       Trajectory cargoTrajectory = TrajectoryGenerator.generateTrajectory(
           List.of(new Pose2d(0, 0, new Rotation2d(0)),
-                  new Pose2d(cargo.x_offset, cargo.distance, new Rotation2d(0))),
+                  new Pose2d(cargo.xOffset, cargo.distance, new Rotation2d(0))),
           // Pass config
           config);
 
@@ -92,7 +92,7 @@ public class GamepieceRetriever {
       // An example trajectory to follow. All units in meters.
       Trajectory hatchTrajectory = TrajectoryGenerator.generateTrajectory(
           List.of(new Pose2d(0, 0, new Rotation2d(0)),
-                  new Pose2d(hatch.x_offset, hatch.distance, new Rotation2d(0))),
+                  new Pose2d(hatch.xOffset, hatch.distance, new Rotation2d(0))),
           // Pass config
           config);
 

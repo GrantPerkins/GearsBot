@@ -55,14 +55,12 @@ public class TurnToHatchCommand extends PIDCommand {
   }
 
   /**
-   * Calculates relative angle of hatch, using tan(theta) = x/y
+   * Gets the angle of the hatch if there is one
    * @return angle of hatch
    */
   public double getHatchAngle() {
     if (visionSubsystem.totalHatches > 0) {
-      double distance = visionSubsystem.hatches[0].distance;
-      double xOffset = visionSubsystem.hatches[0].xOffset;
-      return Math.atan(xOffset / distance);
+      return visionSubsystem.hatches[0].getAngle();
     }
     // return current drivetrain angle if no hatch detected, so no turning
     return driveSubsystem.getGyroAngle().getRadians();

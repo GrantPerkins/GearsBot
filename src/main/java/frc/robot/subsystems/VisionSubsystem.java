@@ -13,19 +13,30 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionSubsystem extends SubsystemBase {
   private NetworkTable table;
-  private int totalObjects;
+  private int totalObjects = 0;
   public Cargo[] cargo = new Cargo[0];
   public Hatch[] hatches = new Hatch[0];
   public int totalCargo, totalHatches;
   private String[] classes;
   private double[] boxes, box;
 
+  private abstract class Gamepiece {
+    public double distance;
+    public double xOffset;
+
+    /**
+     * Gets the relative angle of the game piece in radians
+     * @return the angle
+     */
+    public double getAngle() {
+      return Math.atan(xOffset / distance);
+    }
+  }
+
   /**
    * Represents a detected cargo from the Coral
    */
-  public class Cargo {
-    public double distance;
-    public double xOffset;
+  public class Cargo extends Gamepiece{
 
     /**
      * Holds the data determined by Coral
@@ -41,9 +52,7 @@ public class VisionSubsystem extends SubsystemBase {
   /**
    * Represents a detected hatch from the Coral
    */
-  public class Hatch {
-    public double distance;
-    public double xOffset;
+  public class Hatch extends Gamepiece{
 
     /**
      * Holds the data determined by Coral
@@ -61,8 +70,8 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   /**
-   * Periodically updates the list of detected objects with the data found on
-   * NetworkTables Also creates array of cargo and their relative position.
+   * Periodically updates the list of detected objects with the data found on NetworkTables
+   * Also creates array of cargo and their relative position.
    */
   @Override
   public void periodic() {
@@ -71,24 +80,33 @@ public class VisionSubsystem extends SubsystemBase {
     totalObjects = (int) table.getEntry("nb_objects").getDouble(0);
     classes = table.getEntry("object_classes").getStringArray(new String[totalObjects]);
     boxes = table.getEntry("boxes").getDoubleArray(new double[4 * totalObjects]);
+    // Count up number of cargo and hatches
     for (String s : classes) {
       if (s.equals("Cargo"))
         totalCargo++;
       if (s.equals("Hatchcover"))
         totalHatches++;
     }
+
     cargo = new Cargo[totalCargo];
     hatches = new Hatch[totalHatches];
+    int cargoIndex = 0;
+    int hatchIndex = 0;
 
+    // Generate arrays of Cargo and Hatch objects
     for (int i = 0; i < totalObjects; i += 4) {
       box = new double[4];
       for (int j = 0; j < 4; j++) {
         box[j] = boxes[i + j];
       }
-      if (classes[i].equals("Cargo"))
-        cargo[i] = new Cargo(box);
-      if (classes[i].equals("Hatchcover"))
-        hatches[i] = new Hatch(box);
+      if (classes[i].equals("Cargo")) {
+        cargo[cargoIndex] = new Cargo(box);
+        cargoIndex++;
+      }
+      if (classes[i].equals("Hatchcover")) {
+        hatches[hatchIndex] = new Hatch(box);
+        hatchIndex++;
+      }
     }
   }
 }
